@@ -1,15 +1,21 @@
-from json import loads, dumps, load, dump
+from json import loads, dumps, dump
+from datetime import datetime
 
 class Task:
-    def __init__(self, id, description, status, createdAt, updatedAt):
+    def __init__(self, id, description, status):
         self.id = id
         self.description = description
         self.status = status
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
+        self.createdAt = datetime.now()
+        self.updatedAt = "N/A"
 
-    def updateStatus(self, newStatus):
-        self.status = newStatus
+    def updateDescription(self, description):
+        self.status = description
+        self.updatedAt = datetime.now()
+
+    def updateStatus(self, status):
+        self.status = status
+        self.updatedAt = datetime.now()
     
 
 def convert_to_json(task):
@@ -17,7 +23,7 @@ def convert_to_json(task):
         "id": task.id,
         "description": task.description,
         "status": task.status,
-        "createdAt": task.createdAt,
+        "createdAt": str(task.createdAt),
         "updatedAt": task.updatedAt
     }
     return dumps(dic)
@@ -39,5 +45,5 @@ def deleteTask(task_id):
             tasks.remove(task)
             break
 
-tasks = [Task(1,2,3,4,5), Task(4,3,5,4,1), Task(1,1,3,4,1), Task(3,3,3,4,5)]
+tasks = [Task(1,2,3), Task(4,3,5), Task(1,1,3), Task(5,3,9)]
 saveTasks(tasks)
