@@ -62,7 +62,9 @@ def saveTasks():
 def loadTasks():
     global tasks
     with open("tasks.json", "r") as tasksFile:
-        jsonList = load(tasksFile)
+        if len(tasksFile.read(5)) <= 2:
+            return
+        jsonList = load(tasksFile) #TODO: Fix bug with loading not working
     
     tasks = [convert_to_task(loads(jsonTask)) for jsonTask in jsonList]
 
@@ -112,7 +114,6 @@ while True:
             tasks.append(task_to_add)
             print(f"Task added successfully (ID: {task_to_add.id})")
         elif tokens[0] == "list":
-            #print(tasks[0].createdAt)
             if len(tokens) > 1:
                 listTasks(tokens[1])
             else:
@@ -131,6 +132,7 @@ while True:
             break
         else:
             print("Invalid input!")
+        saveTasks()
     except IndexError:
         print("Error: Command takes more inputs!")
     except LookupError:
