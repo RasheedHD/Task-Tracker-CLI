@@ -2,8 +2,10 @@ from json import loads, dumps, dump
 from datetime import datetime
 
 class Task:
-    def __init__(self, id, description, status="todo"):
-        self.id = id
+    num = 0
+    def __init__(self, description, status="todo"):
+        Task.num += 1
+        self.id = Task.num
         self.description = description
         self.status = status
         self.createdAt = datetime.now()
@@ -37,7 +39,7 @@ def convert_to_json(task):
 def convert_to_dic(task):
     return loads(task)
 
-def saveTasks(tasks):
+def saveTasks():
     tasksD = list(map(convert_to_json, tasks))
     with open("tasks.json", "w") as tasksFile:
         dump(tasksD, tasksFile, indent=4)
@@ -46,10 +48,7 @@ def addTask(task):
     tasks.append(task)
 
 def deleteTask(task_id):
-    for task in tasks:
-        if task.id == task_id:
-            tasks.remove(task)
-            break
+    tasks.remove(findTask(task_id))
 
 def listTasks(s):
     tasksToView = []
@@ -60,20 +59,52 @@ def listTasks(s):
             if task.status == s:
                 tasksToView.append(task)
     else:
-        pass # TODO: throw error
-
+        raise Exception
+    if not tasksToView:
+        print("No tasks yet")
+        return
     print("="*96)
     print(f"{"ID":<5} {"Description":<30} {"Status":<8} {"Created At":<20} {"Updated At":<20}")
     for task in tasksToView:
         print(f"{task.id:<5} {task.description:<30} {task.status:<8} {task.getDateString("c"):<20} {task.getDateString("u"):<20}")
 
-
-tasks = [Task(1,"Walk the cat", "done"), Task(2,"Build a project", "done"), Task(3,"Study at home"), Task(4,"Clean the dishes")]
-
-
-listTasks("todo")
-
-
+def findTask(task_id):
+    for task in tasks:
+        if task.id == task_id:
+            return task
+tasks = []
 
 
-#saveTasks(tasks)
+
+while True:
+    tokens = input("> ").split()
+    if len(tokens) == 0:
+        print("Invalid input!")
+        continue
+    try:
+        if tokens[0] == "add":
+            tasks.append(Task(tokens[1]))
+        elif tokens[0] == "list":
+            if len(tokens) > 1:
+                listTasks(tokens[1])
+            else:
+                listTasks("all")
+        elif tokens[0] == "delete":
+            deleteTask(tokens[1])
+        elif tokens[0] == "mark-in-progress":
+            findTask(tokens[1]).updateStatus("in-progress")
+        elif tokens[0] == "mark-done":
+            findTask(tokens[1]).updateStatus("done")
+        elif tokens[0] == "update":
+            findTask(tokens[1]).updateDescription(tokens[2])
+        elif tokens[0] == "exit":
+            saveTasks()
+            print("Saving and Exiting...")
+            break
+        else:
+            print("Invalid input!")
+    except IndexError:
+        print("Error: Command takes more inputs!")
+    except Exception:
+        print("Error: list accepts optional arguments: (done/todo/in-progress)")
+    
