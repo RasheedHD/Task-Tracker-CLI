@@ -12,7 +12,7 @@ class Task:
         self.updatedAt = "N/A"
 
     def updateDescription(self, description):
-        self.status = description
+        self.description = description
         self.updatedAt = datetime.now()
 
     def updateStatus(self, status):
