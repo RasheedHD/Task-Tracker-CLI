@@ -59,7 +59,7 @@ def listTasks(s):
             if task.status == s:
                 tasksToView.append(task)
     else:
-        raise Exception
+        raise LookupError
     if not tasksToView:
         print("No tasks yet")
         return
@@ -69,9 +69,11 @@ def listTasks(s):
         print(f"{task.id:<5} {task.description:<30} {task.status:<8} {task.getDateString("c"):<20} {task.getDateString("u"):<20}")
 
 def findTask(task_id):
+    task_id = int(task_id)
     for task in tasks:
         if task.id == task_id:
             return task
+    raise NameError
 tasks = []
 
 
@@ -83,7 +85,9 @@ while True:
         continue
     try:
         if tokens[0] == "add":
-            tasks.append(Task(tokens[1]))
+            task_to_add = Task(" ".join(tokens[1:]).strip('"'))
+            tasks.append(task_to_add)
+            print(f"Task added successfully (ID: {task_to_add.id})")
         elif tokens[0] == "list":
             if len(tokens) > 1:
                 listTasks(tokens[1])
@@ -96,7 +100,7 @@ while True:
         elif tokens[0] == "mark-done":
             findTask(tokens[1]).updateStatus("done")
         elif tokens[0] == "update":
-            findTask(tokens[1]).updateDescription(tokens[2])
+            findTask(tokens[1]).updateDescription(" ".join(tokens[2:]).strip('"'))
         elif tokens[0] == "exit":
             saveTasks()
             print("Saving and Exiting...")
@@ -105,6 +109,8 @@ while True:
             print("Invalid input!")
     except IndexError:
         print("Error: Command takes more inputs!")
-    except Exception:
+    except LookupError:
         print("Error: list accepts optional arguments: (done/todo/in-progress)")
+    except NameError:
+        print("Error: Task with given ID does not exist!")
     
