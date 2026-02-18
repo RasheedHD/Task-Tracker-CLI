@@ -57,13 +57,14 @@ def convert_to_task(dic):
 def saveTasks():
     tasksD = list(map(convert_to_json, tasks))
     with open("tasks.json", "w") as tasksFile:
-        dump(tasksD, tasksFile, indent=4)
+        dump(tasksD, tasksFile)
 
 def loadTasks():
     global tasks
     with open("tasks.json", "r") as tasksFile:
         if len(tasksFile.read(5)) <= 2:
             return
+        tasksFile.seek(0)
         jsonList = load(tasksFile) #TODO: Fix bug with loading not working
     
     tasks = [convert_to_task(loads(jsonTask)) for jsonTask in jsonList]
@@ -99,7 +100,6 @@ def findTask(task_id):
         if task.id == task_id:
             return task
     raise NameError
-
 
 loadTasks()
 
@@ -139,4 +139,6 @@ while True:
         print("Error: list accepts optional arguments: (done/todo/in-progress)")
     except NameError:
         print("Error: Task with given ID does not exist!")
+    except ValueError:
+        print("Error: ID should be a number!")
     
