@@ -65,7 +65,7 @@ def loadTasks():
         if len(tasksFile.read(5)) <= 2:
             return
         tasksFile.seek(0)
-        jsonList = load(tasksFile) #TODO: Fix bug with loading not working
+        jsonList = load(tasksFile)
     
     tasks = [convert_to_task(loads(jsonTask)) for jsonTask in jsonList]
 
