@@ -241,8 +241,13 @@ This project is intentionally simple and readable. It is suitable for beginners 
 * Command parsing
 * Error handling
 
+The original project idea can be found at https://roadmap.sh/projects/task-tracker
+
 ---
 
 ## License
 
 You may freely use, modify, and distribute this project for educational purposes.
+
+
+
