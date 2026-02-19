@@ -68,6 +68,7 @@ def loadTasks():
         jsonList = load(tasksFile)
     
     tasks = [convert_to_task(loads(jsonTask)) for jsonTask in jsonList]
+    Task.num = tasks[-1].id
 
 
 def addTask(task):
