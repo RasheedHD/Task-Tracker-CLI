@@ -2,7 +2,7 @@ from json import loads, load, dumps, dump
 from datetime import datetime
 
 class Task:
-    num = 0
+    num = 0 # ID counter
     def __init__(self, description):
         Task.num += 1
         self.id = Task.num
@@ -19,22 +19,22 @@ class Task:
         self.status = status
         self.updatedAt = datetime.now()
 
-    def getDateString(self, type):
-        if type == "c":
+    def getDateString(self, type): # Converts datetime object to string
+        if type == "c": # If date is created at...
             if len(str(self.createdAt)) > 20:
                 return str(self.createdAt)[:-10]
             else:
                 return str(self.createdAt)[:-3]
-        elif type == "u":
+        elif type == "u": # If date is updated at...
             if len(str(self.updatedAt)) > 20:
                 return str(self.updatedAt)[:-10] if self.updatedAt != "N/A" else "N/A"
             else:
                 return str(self.updatedAt)[:-3] if self.updatedAt != "N/A" else "N/A"
     
-tasks = []
+tasks = [] # Used to store Task instances
     
 
-def convert_to_json(task):
+def convert_to_json(task): # used for converting dictionaries to json for saving tasks
     dic = {
         "id": task.id,
         "description": task.description,
@@ -44,7 +44,7 @@ def convert_to_json(task):
     }
     return dumps(dic)
 
-def convert_to_task(dic):
+def convert_to_task(dic): # Used for loading tasks from json
     task = Task(dic["description"])
     task.id = dic["id"]
     task.status = dic["status"]
@@ -68,7 +68,7 @@ def loadTasks():
         jsonList = load(tasksFile)
     
     tasks = [convert_to_task(loads(jsonTask)) for jsonTask in jsonList]
-    Task.num = tasks[-1].id
+    Task.num = tasks[-1].id # to resolve any issues with duplicate IDs
 
 
 def addTask(task):
@@ -86,37 +86,37 @@ def listTasks(s):
             if task.status == s:
                 tasksToView.append(task)
     else:
-        raise LookupError
+        raise LookupError # Bad argument for list
     if not tasksToView:
         print("No tasks yet")
         return
     print("="*96)
-    print(f"{"ID":<5} {"Description":<30} {"Status":<12} {"Created At":<20} {"Updated At":<20}")
+    print(f"{"ID":<5} {"Description":<30} {"Status":<12} {"Created At":<20} {"Updated At":<20}") # Pretty format for viewing tasks
     for task in tasksToView:
         print(f"{task.id:<5} {task.description:<30} {task.status:<12} {task.getDateString("c"):<20} {task.getDateString("u"):<20}")
 
-def findTask(task_id):
+def findTask(task_id): # Takes id and returns task with that specific id
     task_id = int(task_id)
     for task in tasks:
         if task.id == task_id:
             return task
     raise NameError
 
-loadTasks()
+loadTasks() # loads tasks whenever the program is run
 
-while True:
-    tokens = input("> ").split()
+while True: # Program keeps running until "exit" is entered
+    tokens = input("> ").split() # splits each word into a list of tokens
     if len(tokens) == 0:
         print("Invalid input!")
         continue
     try:
         if tokens[0] == "add":
-            task_to_add = Task(" ".join(tokens[1:]).strip('"'))
+            task_to_add = Task(" ".join(tokens[1:]).strip('"')) # String formatting
             tasks.append(task_to_add)
             print(f"Task added successfully (ID: {task_to_add.id})")
         elif tokens[0] == "list":
             if len(tokens) > 1:
-                listTasks(tokens[1])
+                listTasks(tokens[1]) # conditional view arguments
             else:
                 listTasks("all")
         elif tokens[0] == "delete":
@@ -125,7 +125,7 @@ while True:
             findTask(tokens[1]).updateStatus("in-progress")
         elif tokens[0] == "mark-done":
             findTask(tokens[1]).updateStatus("done")
-        elif tokens[0] == "update":
+        elif tokens[0] == "update": # Update the description of a task, given id
             findTask(tokens[1]).updateDescription(" ".join(tokens[2:]).strip('"'))
         elif tokens[0] == "exit":
             saveTasks()
